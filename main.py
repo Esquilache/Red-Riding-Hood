@@ -10,6 +10,13 @@ load_dotenv()
 # Get the bot token from the environment variable
 TOKEN = os.getenv("DISCORD_TOKEN")
 
+# Read version from version.txt
+def get_version():
+    with open("version.txt", "r") as f:
+        return f.read().strip()
+
+bot_version = get_version()
+
 # Create bot instance with prefix 'r.'
 intents = discord.Intents.default()
 intents.message_content = True  # Enable message content intent
@@ -21,6 +28,7 @@ bot = commands.Bot(command_prefix="r.", intents=intents)
 @bot.event
 async def on_ready():
     print(f'Logged in as {bot.user}')
+    print(f"Bot Version: {bot_version}")  # Display the bot's version
     # Load modules after the bot is ready
     await load_modules()
 
