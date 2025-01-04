@@ -97,6 +97,17 @@ class ModerationCog(commands.Cog):
         self.log_infraction(member.id, ctx.guild.id, ctx.author.id, "Warn", reason)
         await ctx.send(f"⚠️ {member.mention} has been warned. Reason: {reason}")
 
+    # Purge Command
+    @commands.command(name="purge")
+    @commands.has_permissions(manage_messages=True)
+    async def purge(self, ctx, amount: Optional[int] = 10):
+        """Deletes the specified number of messages."""
+        if amount == "all":
+            await ctx.send("⚠️ Purging all messages is not allowed. Specify a number instead.")
+        else:
+            await ctx.channel.purge(limit=amount)
+            await ctx.send(f"🧹 Cleared {amount} messages.", delete_after=5)
+    
     # Infractions Command
     @commands.command(name="infractions")
     @commands.has_permissions(manage_messages=True)
@@ -112,6 +123,20 @@ class ModerationCog(commands.Cog):
         else:
             await ctx.send(f"ℹ️ No infractions found for {member.mention}.")
 
+    # Additional Commands: Slowmode, Nickname, etc.
+    @commands.command(name="slowmode")
+    @commands.has_permissions(manage_channels=True)
+    async def slowmode(self, ctx, seconds: int):
+        await ctx.channel.edit(slowmode_delay=seconds)
+        await ctx.send(f"🐢 Slowmode set to {seconds} seconds.")
+
+    @commands.command(name="nickname")
+    @commands.has_permissions(manage_nicknames=True)
+    async def nickname(self, ctx, member: discord.Member, *, nickname: Optional[str] = None):
+        await member.edit(nick=nickname)
+        await ctx.send(f"📝 Changed nickname for {member.mention} to {nickname if nickname else 'default'}.")
+      
+    
     # Modlog Command
     @commands.command(name="modlog")
     @commands.has_permissions(manage_messages=True)
