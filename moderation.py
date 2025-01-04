@@ -157,6 +157,22 @@ class ModerationCog(commands.Cog):
         else:
             await ctx.send(f"ℹ️ No moderation history found for {member.mention}.")
 
+   # Lock Channel
+    @commands.command(name="lock")
+    @commands.has_permissions(manage_channels=True)
+    async def lock(self, ctx):
+        """Locks the current channel."""
+        await ctx.channel.set_permissions(ctx.guild.default_role, send_messages=False)
+        await ctx.send("🔒 Channel locked.")
+
+    # Unlock Channel
+    @commands.command(name="unlock")
+    @commands.has_permissions(manage_channels=True)
+    async def unlock(self, ctx):
+        """Unlocks the current channel."""
+        await ctx.channel.set_permissions(ctx.guild.default_role, send_messages=True)
+        await ctx.send("🔓 Channel unlocked.")
+  
 # Setup function to add the cog
 async def setup(bot):
     await bot.add_cog(ModerationCog(bot))
