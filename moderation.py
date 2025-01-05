@@ -75,14 +75,21 @@ class ModerationCog(commands.Cog):
     @commands.has_permissions(manage_messages=True)
     async def infractions(self, ctx, member: discord.Member):
         """Lists all infractions for a member."""
-        rows = db.get_infractions(member.id, ctx.guild.id)
-        if rows:
-            embed = discord.Embed(title=f"Infractions for {member}", color=discord.Color.orange())
-            for infraction_type, reason, timestamp in rows:
-                embed.add_field(name=f"{infraction_type} - {timestamp.strftime('%Y-%m-%d %H:%M:%S')}", value=reason, inline=False)
-            await ctx.send(embed=embed)
-        else:
-            await ctx.send(f"ℹ️ No infractions found for {member.mention}.")
+        try:
+            rows = db.get_infractions(member.id, ctx.guild.id)
+            if rows:
+                embed = discord.Embed(title=f"Infractions for {member}", color=discord.Color.orange())
+                for infraction_type, reason, timestamp in rows:
+                    embed.add_field(
+                        name=f"{infraction_type} - {timestamp.strftime('%Y-%m-%d %H:%M:%S')}",
+                        value=reason,
+                        inline=False
+                    )
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send(f"ℹ️ No infractions found for {member.mention}.")
+        except Exception as e:
+            await ctx.send(f"❌ Failed to fetch infractions for {member.mention}. Error: {e}")
 
     # Slowmode Command
     @commands.command(name="slowmode")
@@ -105,18 +112,21 @@ class ModerationCog(commands.Cog):
     @commands.has_permissions(manage_messages=True)
     async def modlog(self, ctx, member: discord.Member):
         """Shows the moderation log for a member."""
-        rows = db.get_modlog(member.id, ctx.guild.id)
-        if rows:
-            embed = discord.Embed(title=f"Moderation Log for {member}", color=discord.Color.purple())
-            for infraction_id, infraction_type, reason, timestamp in rows:
-                embed.add_field(
-                    name=f"Case {infraction_id} - {infraction_type}",
-                    value=f"Reason: {reason}\nDate: {timestamp.strftime('%Y-%m-%d %H:%M:%S')}",
-                    inline=False
-                )
-            await ctx.send(embed=embed)
-        else:
-            await ctx.send(f"ℹ️ No moderation history found for {member.mention}.")
+        try:
+            rows = db.get_modlog(member.id, ctx.guild.id)
+            if rows:
+                embed = discord.Embed(title=f"Moderation Log for {member}", color=discord.Color.purple())
+                for infraction_id, infraction_type, reason, timestamp in rows:
+                    embed.add_field(
+                        name=f"Case {infraction_id} - {infraction_type}",
+                        value=f"Reason: {reason}\nDate: {timestamp.strftime('%Y-%m-%d %H:%M:%S')}",
+                        inline=False
+                    )
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send(f"ℹ️ No moderation history found for {member.mention}.")
+        except Exception as e:
+            await ctx.send(f"❌ Failed to fetch modlog for {member.mention}. Error: {e}")
 
     # Lock Command
     @commands.command(name="lock")
